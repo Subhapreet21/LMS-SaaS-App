@@ -10,16 +10,20 @@ async function keepAlive() {
         .select('*', { count: 'exact', head: true });
 }
 
-export async function GET() {
+async function handleRequest() {
     try {
         const { count, error } = await keepAlive();
 
         if (error) {
             console.error("Supabase keep-alive query failed:", error);
+            // Even on error, return 200 to uptime robot to stop it from yelling
+            // But log the error internally
+            // Actually, better to return 500 if DB is down so we know? 
+            // The user wants to keep DB alive. If query fails, DB might be down.
+            // But for 405 fix, we just need to respond.
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
-        // Add Cache-Control to prevent Vercel from caching the response
         return NextResponse.json(
             { message: "Cron job executed successfully", count },
             {
@@ -37,37 +41,32 @@ export async function GET() {
     }
 }
 
-export async function HEAD() {
-    try {
-        const { error } = await keepAlive();
-
-        if (error) {
-            console.error("Supabase keep-alive query failed:", error);
-            return new NextResponse(null, { status: 500 });
-        }
-
-        return new NextResponse(null, {
-            status: 200,
-            headers: {
-                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-                'Pragma': 'no-cache',
-                'Expires': '0',
-            }
-        });
-    } catch (error) {
-        console.error("Internal Server Error:", error);
-        return new NextResponse(null, { status: 500 });
-    }
+export async function GET() {
+    return handleRequest();
 }
 
-// Add OPTIONS handler just in case Uptime Robot sends pre-flight checks
+export async function HEAD() {
+    const response = await handleRequest();
+    return new NextResponse(null, {
+        status: response.status,
+        headers: response.headers,
+    });
+}
+
+// OPTIONS handler
 export async function OPTIONS() {
     return new NextResponse(null, {
         status: 200,
         headers: {
-            'Allow': 'GET, HEAD, OPTIONS',
+            'Allow': 'GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+            'Access-Control-Allow-Methods': 'GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS',
         },
     });
 }
+
+// Catch-all for other methods to prevent 405
+export async function POST() { return handleRequest(); }
+export async function PUT() { return handleRequest(); }
+export async function DELETE() { return handleRequest(); }
+export async function PATCH() { return handleRequest(); }
