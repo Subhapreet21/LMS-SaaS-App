@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.31.6",
+    "@clerk/nextjs": "^6.36.8",
     "@hookform/resolvers": "^5.2.1",
     "@jsmastery/utils": "^1.0.2",
     "@opentelemetry/core": "^2.1.0",
@@ -17,7 +17,7 @@
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.3",
-    "@sentry/nextjs": "^10.10.0",
+    "@sentry/nextjs": "^10.35.0",
     "@supabase/supabase-js": "^2.56.1",
     "@vapi-ai/web": "^2.3.10",
     "class-variance-authority": "^0.7.1",
@@ -25,8 +25,8 @@
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.525.0",
     "next": "^16.1.4",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "react-hook-form": "^7.62.0",
     "tailwind-merge": "^3.3.1",
     "zod": "^4.1.5"
